@@ -1,0 +1,12 @@
+*.o
+*.tar
+csim
+test-trans
+tracegen
+trace.f*
+.csim_results
+.marker
+*.tmp
+.DS_Store
+*.dSYM
+*.out
