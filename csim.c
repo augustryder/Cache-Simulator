@@ -31,6 +31,36 @@ int main(int argc, char** argv)
     return 0;
 }
 
+Inst* parse_trace(char* filename)
+{
+    // Open file
+    FILE* file = fopen(filename, "r");
+    if (file == NULL) {
+        fprintf(stderr, "Error: Could not open file %s\n", filename);
+        return NULL;
+    }
+
+    // Count number of data instructions and allocate instructions array
+    char line[64];  // Trace lines can only get to like 21 bytes
+    int inst_count = 0;
+
+    while (fgets(line, sizeof(line), file)) {
+        if (line[0] == 'I') continue;
+        if (line[1] == 'M') {
+            inst_count += 2; // Modify is a load and store instruction
+        } else {
+            inst_count += 1;
+        }
+    }
+
+    Inst* instructions = (Inst*) malloc(sizeof(Inst) * inst_count);
+
+    // Adds data instructions to IR
+
+    fclose(file);
+    return NULL;
+}
+
 
 options_data* get_options(int argc, char** argv, options_data* options) 
 {
