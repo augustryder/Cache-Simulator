@@ -1,3 +1,18 @@
+### Install
+
+```bash 
+# Clone the repository
+git clone https://github.com/augustryder/Cache-Simulator.git
+
+# Build the docker image
+docker build -t cachelab-env .
+
+# Run docker container with bash terminal
+docker run -it --rm -v "$(pwd):/work" -w /work cachelab-env bash
+
+```
+
+
 This is the handout directory for the CS:APP Cache Lab. 
 
 ************************
