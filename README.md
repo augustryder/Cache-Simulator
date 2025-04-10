@@ -1,4 +1,4 @@
-### Install
+## Install
 
 ```bash 
 # Clone the repository
@@ -13,42 +13,56 @@ docker run -it --rm -v "$(pwd):/work" -w /work cachelab-env bash
 ```
 
 
-This is the handout directory for the CS:APP Cache Lab. 
+## This is the starter directory for the CS:APP Cache Lab. 
 
-************************
-Running the autograders:
-************************
+## Running the autograders:
 
 Before running the autograders, compile your code:
+```bash
     linux> make
+```
 
 Check the correctness of your simulator:
+```bash
     linux> ./test-csim
+```
 
 Check the correctness and performance of your transpose functions:
+```bash
     linux> ./test-trans -M 32 -N 32
     linux> ./test-trans -M 64 -N 64
     linux> ./test-trans -M 61 -N 67
+```
 
 Check everything at once (this is the program that your instructor runs):
-    linux> ./driver.py    
+```bash
+    linux> python3 ./driver.py    
+```
 
-******
-Files:
-******
+## Files:
 
-# You will modifying and handing in these two files
-csim.c       Your cache simulator
-trans.c      Your transpose function
+### You will modifying and handing in these two files
+- csim.c       Your cache simulator
 
-# Tools for evaluating your simulator and transpose function
-Makefile     Builds the simulator and tools
-README       This file
-driver.py*   The driver program, runs test-csim and test-trans
-cachelab.c   Required helper functions
-cachelab.h   Required header file
-csim-ref*    The executable reference cache simulator
-test-csim*   Tests your cache simulator
-test-trans.c Tests your transpose function
-tracegen.c   Helper program used by test-trans
-traces/      Trace files used by test-csim.c
+- trans.c      Your transpose function
+
+### Tools for evaluating your simulator and transpose function
+- Makefile:     Builds the simulator and tools
+
+- README.md:    This file
+
+- driver.py*:   The driver program, runs test-csim and test-trans
+
+- cachelab.c:   Required helper functions
+
+- cachelab.h:   Required header file
+
+- csim-ref*:    The executable reference cache simulator
+
+- test-csim*:   Tests your cache simulator
+
+- test-trans.c: Tests your transpose function
+
+- tracegen.c:   Helper program used by test-trans
+
+- traces/:      Trace files used by test-csim.c
