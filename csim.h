@@ -44,7 +44,7 @@ typedef struct {
 } Cache;
 
 options_data* get_options(int argc, char** argv, options_data* options); // Parses options and puts them in a options_data struct
-Inst* parse_trace(char* filename); // Parses trace file and returns an array of memory addresses
+Inst* parse_trace(char* filename, size_t* inst_count); // Parses trace file and returns an array of insts and the size
 Cache build_cache(int s, int E, int b); // Allocates a cache (s, E, b) and returns a pointer to it
 void free_cache(Cache* cache); // Frees dynamically allocated cache arrays
 void print_cache(Cache* cache); // Prints the size and contents of the cache
