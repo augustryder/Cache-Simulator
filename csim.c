@@ -17,20 +17,57 @@ int main(int argc, char** argv)
     printf("help_flag: %d\nverbose_flag: %d\ns: %d\nE: %d\nb: %d\ntrace_file: %s\n", 
         options.help_flag, options.verbose_flag, options.s, options.E, options.b, options.trace_file);
 
-    const int ADDRESS_BITS = 64; // assume 64 bit system
+    Inst* instructions = parse_trace(options.trace_file);
 
-    // Initializing necessary quantities
-    const int s = options.s; // number of set bits
-    const int E = options.E; // associativity, number of lines per set
-    const int b = options.b; // number of block offset bits
-    const int t = ADDRESS_BITS - (s + b); // number of tag bits
-    const int block_size = pow(2, b);
-    const int num_sets = pow(2, s);
-    const int cache_size = num_sets * E * block_size;
+    for (int i = 0; i < 5; ++i) {
+        printf("OP: %d, Addr: %08lX\n", instructions[i].operation, instructions[i].address);
+    }
 
-    parse_trace(options.trace_file);
+    Cache cache = build_cache(options.s, options.E, options.b);
+    print_cache(&cache);
 
     return 0;
+}
+
+Cache build_cache(int s, int E, int b) 
+{
+    Cache cache = { .s = s,
+                    .E = E,
+                    .b = b,
+                    .S = 1 << s,
+                    .B = 1 << b };
+    // Allocate array of sets
+    cache.sets = (CacheSet*) malloc(sizeof(CacheSet) * cache.S);
+    // For each set allocate an array of lines
+    for (int i = 0; i < cache.S; ++i) {
+        cache.sets[i].lines = (CacheLine*) malloc(sizeof(CacheLine) * cache.E);
+        // Initialize each line in the set
+        for (int j = 0; j < E; ++j) {
+            cache.sets[i].lines[j] = (CacheLine) { .valid = 0, .tag = 0, .last_used = 0 };
+        }
+    }
+    return cache;
+}
+
+void free_cache(Cache* cache) {
+    for (int i = 0; i < cache->S; ++i) {
+        free(cache->sets[i].lines);
+    }
+    free(cache->sets);
+}
+
+void print_cache(Cache* cache) {
+    printf("Cache Size: %d bytes\n", cache->B * cache->E * cache-> S);
+    for (int i = 0; i < cache->S; ++i) {
+        // print set
+        printf("Set %d:\n", i);
+        // print lines
+        for (int j = 0; j < cache->E; ++j) {
+            printf("valid: %d, tag: %08lX, last used: %lu\n",
+                    cache->sets[i].lines[j].valid, cache->sets[i].lines[j].tag, cache->sets[i].lines[j].last_used);
+        }
+        printf("\n");
+    }
 }
 
 Inst* parse_trace(char* filename)
@@ -78,12 +115,8 @@ Inst* parse_trace(char* filename)
         }
     }
 
-    for (int i = 0; i < inst_count; ++i) {
-        printf("OP: %d, Addr: %08lX\n", instructions[i].operation, instructions[i].address);
-    }
-
     fclose(file);
-    return NULL;
+    return instructions;
 }
 
 
