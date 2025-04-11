@@ -28,6 +28,8 @@ int main(int argc, char** argv)
     const int num_sets = pow(2, s);
     const int cache_size = num_sets * E * block_size;
 
+    parse_trace(options.trace_file);
+
     return 0;
 }
 
@@ -55,7 +57,30 @@ Inst* parse_trace(char* filename)
 
     Inst* instructions = (Inst*) malloc(sizeof(Inst) * inst_count);
 
-    // Adds data instructions to IR
+    int inst_idx = 0;
+    rewind(file); // Reset file pointer to beginning
+    while (fgets(line, sizeof(line), file)) {
+        if (line[0] == 'I') continue;
+
+        // Gets address from line
+        char* address_start = &line[3];
+        uint64_t address = (uint64_t) strtol(address_start, NULL, 16);  // base 16 for hex
+
+        // Adds corresponding instuction(s) to IR
+        char op = line[1];
+        if (op == 'M') {
+            instructions[inst_idx++] = (Inst) {.operation = LOAD, .address = address}; // Load inst, then
+            instructions[inst_idx++] = (Inst) {.operation = STORE, .address = address}; // store inst
+        } else if (op == 'L') {
+            instructions[inst_idx++] = (Inst) {.operation = LOAD, .address = address}; // Load inst
+        } else {
+            instructions[inst_idx++] = (Inst) {.operation = STORE, .address = address}; // Store inst
+        }
+    }
+
+    for (int i = 0; i < inst_count; ++i) {
+        printf("OP: %d, Addr: %08lX\n", instructions[i].operation, instructions[i].address);
+    }
 
     fclose(file);
     return NULL;

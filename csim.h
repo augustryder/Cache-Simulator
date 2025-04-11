@@ -21,7 +21,7 @@ typedef enum {
 
 typedef struct {
     OpType operation;
-    int64_t address;
+    uint64_t address;
 } Inst;
 
 // Parses options and puts them in a options_data struct
