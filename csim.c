@@ -41,14 +41,40 @@ int main(int argc, char** argv)
         bool hit = false;
         CacheSet* set = &cache.sets[set_index];
         for (int j = 0; j < cache.E; ++j) {
-            if (set->lines[j].valid && set->lines[j].tag == addr_tag) 
+            if (set->lines[j].valid == 1 && set->lines[j].tag == addr_tag) {
                 hit = true;
+                hits++;
+                set->lines[j].last_used = i;
+            }
         }
-        if (hit) {
-            hits++;
-        } else {
+        if (!hit) {
             misses++;
-            // Look for open line to load block into, otherwise evict
+            // Try to find open line to load block into
+            bool evict = true;
+            for (int j = 0; j < cache.E; ++j) {
+                if (set->lines[j].valid == 0) {
+                    // Open line found, load block
+                    set->lines[j].valid = 1;
+                    set->lines[j].tag = addr_tag;
+                    set->lines[j].last_used = i;
+                    evict = false; // no need to evict
+                    break;
+                }
+            }
+            if (evict) {
+                // Find LRU line to evict
+                int min_idx = 0;
+                for (int j = 0; j < cache.E; ++j) {
+                    if (set->lines[j].last_used < set->lines[min_idx].last_used) {
+                        min_idx = j;
+                    }
+                }
+                // Evict
+                set->lines[min_idx].valid = 1;
+                set->lines[min_idx].tag = addr_tag;
+                set->lines[min_idx].last_used = i;
+                evictions++;
+            }
         }
     }
 
