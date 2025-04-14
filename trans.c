@@ -133,36 +133,11 @@ void trans_64x64(int M, int N, int A[N][M], int B[M][N])
 }
 
 void trans_61x67(int M, int N, int A[N][M], int B[M][N]) {
-    int r, c;
-    int a0, a1, a2, a3;
-    for (r = 0; r < N - (N % 4); r += 4) { // r = start row of block in A
-        for (c = 0; c < M - (M % 4); c += 4) { // c = start col of block in A
-            for (int i = r; i < r + 4; ++i) {
-                a0 = A[i][c + 0];
-                a1 = A[i][c + 1];
-                a2 = A[i][c + 2];
-                a3 = A[i][c + 3];
-                
-                B[c + 0][i] = a0;
-                B[c + 1][i] = a1;
-                B[c + 2][i] = a2;
-                B[c + 3][i] = a3;
-            }
-        }
-    }
-
-    // Process remaining full rows
-    for (r = 64; r < 67; ++r) {
-        for (c = 0; c < M; ++c) {
-            B[c][r] = A[r][c];
-        }
-    }
-
-    // Process remaining column
-    c = 60;
-    for (r = 0; r < 64; ++r) {
-        B[c][r] = A[r][c];
-    }
+    for (int i = 0; i < N; i += 16)
+        for (int j = 0; j < M; j += 16)
+            for (int k = i; k < i + 16 && k < N; k++)
+                for (int s = j; s < j + 16 && s < M; s++)
+                    B[s][k] = A[k][s];
 }
 
 /* 
