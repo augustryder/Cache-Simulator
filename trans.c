@@ -46,8 +46,8 @@ void transpose_submit(int M, int N, int A[N][M], int B[M][N])
 void trans_32x32(int M, int N, int A[N][M], int B[M][N]) {
     int r, c;
     int a0, a1, a2, a3, a4, a5, a6, a7;
-    for (r = 0; r < 32; r += 8) { // r = start row of block in A
-        for (c = 0; c < 32; c += 8) { // c = start col of block in A
+    for (r = 0; r < N; r += 8) { // r = start row of block in A
+        for (c = 0; c < M; c += 8) { // c = start col of block in A
             for (int i = r; i < r + 8; ++i) {
                 a0 = A[i][c + 0];
                 a1 = A[i][c + 1];
