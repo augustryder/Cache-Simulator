@@ -1,5 +1,6 @@
 ## Install
 
+_For development on non-Linux_:
 ```bash 
 # Clone the repository
 git clone https://github.com/augustryder/Cache-Simulator.git
@@ -11,9 +12,8 @@ docker build -t cachelab-env .
 docker run -it --rm -v "$(pwd):/work" -w /work cachelab-env bash
 
 ```
+Valgrind seems to run too slowly in the Docker container (or something), so to test the large matrices (64x64 and 61x67) I needed to use a real Linux machine.
 
-
-## This is the starter directory for the CS:APP Cache Lab. 
 
 ## Running the autograders:
 
