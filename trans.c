@@ -23,7 +23,7 @@ char transpose_submit_desc[] = "Transpose submission";
 void transpose_submit(int M, int N, int A[N][M], int B[M][N])
 {
     if (M == 64 && N == 64) {
-        trans_32x32(M, N, A, B);
+        trans_64x64(M, N, A, B);
         return;
     }
 
