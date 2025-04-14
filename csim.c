@@ -14,18 +14,11 @@ int main(int argc, char** argv)
     options_data options;
     get_options(argc, argv, &options);
 
-    printf("help_flag: %d\nverbose_flag: %d\ns: %d\nE: %d\nb: %d\ntrace_file: %s\n", 
-        options.help_flag, options.verbose_flag, options.s, options.E, options.b, options.trace_file);
-
     size_t inst_count;
     Inst* instructions = parse_trace(options.trace_file, &inst_count);
 
-    for (int i = 0; i < inst_count; ++i) {
-        printf("OP: %d, Addr: %08lX\n", instructions[i].operation, instructions[i].address);
-    }
-
     Cache cache = build_cache(options.s, options.E, options.b);
-    print_cache(&cache);
+    // print_cache(&cache);
 
     int hits = 0;
     int misses = 0;
@@ -33,10 +26,9 @@ int main(int argc, char** argv)
 
     for (int i = 0; i < inst_count; ++i) {
         uint64_t addr = instructions[i].address;
-        uint64_t block_offset = addr & ((1 << cache.b) - 1); // gets lower-order b bits from addr
         uint64_t set_index = (addr >> cache.b) & ((1 << cache.s) - 1); // gets middle s bits from addr
         uint64_t addr_tag = addr >> (cache.b + cache.s); // gets higher-order t = 64 - (s + b) bits from addr
-        printf("addr: %04lX, block_offset: %04lX, set_index: %04lX, tag: %04lX\n", addr, block_offset, set_index, addr_tag);
+
         // Look for line in sets[set_index]
         bool hit = false;
         CacheSet* set = &cache.sets[set_index];
