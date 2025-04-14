@@ -27,11 +27,27 @@ void transpose_submit(int M, int N, int A[N][M], int B[M][N])
         return;
     }
 
-    int r;
-    int c;
+    if (M == 32 && N == 32) {
+        trans_32x32(M, N, A, B);
+        return;
+    }
+
+    if (M == 61 && N == 67) {
+        trans_61x67(M, N, A, B);
+        return;
+    }
+}
+
+/* 
+ * You can define additional transpose functions below. We've defined
+ * a simple one below to help you get started. 
+ */ 
+
+void trans_32x32(int M, int N, int A[N][M], int B[M][N]) {
+    int r, c;
     int a0, a1, a2, a3, a4, a5, a6, a7;
-    for (r = 0; r < N - (N % 8); r += 8) { // r = start row of block in A
-        for (c = 0; c < M - (M % 8); c += 8) { // c = start col of block in A
+    for (r = 0; r < 32; r += 8) { // r = start row of block in A
+        for (c = 0; c < 32; c += 8) { // c = start col of block in A
             for (int i = r; i < r + 8; ++i) {
                 a0 = A[i][c + 0];
                 a1 = A[i][c + 1];
@@ -53,26 +69,9 @@ void transpose_submit(int M, int N, int A[N][M], int B[M][N])
             }
         }
     }
-
-    // Process remaining columns for the main bulk of rows
-    for (r = 0; r < N - (N % 8); ++r) {
-        for (c = M - (M % 8); c < M; ++c) {
-            B[c][r] = A[r][c];
-        }
-    }
-
-    // Process remaining full rows
-    for (r = N - (N % 8); r < N; ++r) {
-        for (c = 0; c < M; ++c) {
-            B[c][r] = A[r][c];
-        }
-    }
 }
 
-/* 
- * You can define additional transpose functions below. We've defined
- * a simple one below to help you get started. 
- */ 
+
 void trans_64x64(int M, int N, int A[N][M], int B[M][N])
 {
     int a0, a1, a2, a3, a4, a5, a6, a7;
@@ -130,6 +129,39 @@ void trans_64x64(int M, int N, int A[N][M], int B[M][N])
                 B[j + 7][k] = a7;
             }
         }
+    }
+}
+
+void trans_61x67(int M, int N, int A[N][M], int B[M][N]) {
+    int r, c;
+    int a0, a1, a2, a3;
+    for (r = 0; r < 60; r += 4) { // r = start row of block in A
+        for (c = 0; c < 64; c += 4) { // c = start col of block in A
+            for (int i = r; i < r + 4; ++i) {
+                a0 = A[i][c + 0];
+                a1 = A[i][c + 1];
+                a2 = A[i][c + 2];
+                a3 = A[i][c + 3];
+                
+                B[c + 0][i] = a0;
+                B[c + 1][i] = a1;
+                B[c + 2][i] = a2;
+                B[c + 3][i] = a3;
+            }
+        }
+    }
+
+    // Process remaining columns for the main bulk of rows
+    for (r = 0; r < 60; ++r) {
+        for (c = 64; c < M; ++c) {
+            B[c][r] = A[r][c];
+        }
+    }
+
+    // Process remaining full row
+    r = 60;
+    for (c = 0; c < M; ++c) {
+        B[c][r] = A[r][c];
     }
 }
 
