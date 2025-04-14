@@ -7,6 +7,10 @@
 #include <unistd.h>
 #include <getopt.h>
 #include <math.h>
+#include "trans.c"
+
+void transpose_submit(int M, int N, int A[N][M], int B[M][N]);
+int is_transpose(int M, int N, int A[N][M], int B[M][N]);
 
 int main(int argc, char** argv)
 {
@@ -79,6 +83,34 @@ int main(int argc, char** argv)
     }
 
     printSummary(hits, misses, evictions);
+    free_cache(&cache);
+
+    int M = 64;
+    int N = 64;
+
+    int A[N][M];
+    int B[M][N];
+    for (int i = 0; i < N; ++i) {
+        for (int j = 0; j < M; ++j) {
+            A[i][j] = i - j;
+        }
+    }
+    transpose_submit(M, N, A, B);
+    for (int i = 0; i < N; ++i) {
+        for (int j = 0; j < M; ++j) {
+            printf("%d ", A[i][j]);
+        }
+        printf("\n");
+    }
+    printf("\n");
+    for (int i = 0; i < M; ++i) {
+        for (int j = 0; j < N; ++j) {
+            printf("%d ", B[i][j]);
+        }
+        printf("\n");
+    }
+    int is_trans = is_transpose(M, N, A, B);
+    printf("Is Transpose: %d\n", is_trans);
     return 0;
 }
 
