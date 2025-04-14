@@ -22,32 +22,35 @@ int is_transpose(int M, int N, int A[N][M], int B[M][N]);
 char transpose_submit_desc[] = "Transpose submission";
 void transpose_submit(int M, int N, int A[N][M], int B[M][N])
 {
+    if (M == 64 && N == 64) {
+        trans_64x64(M, N, A, B);
+        return;
+    }
+
     int r;
     int c;
+    int a0, a1, a2, a3, a4, a5, a6, a7;
     for (r = 0; r < N - (N % 8); r += 8) { // r = start row of block in A
         for (c = 0; c < M - (M % 8); c += 8) { // c = start col of block in A
-                int a0, a1, a2, a3, a4, a5, a6, a7;
-                int diag;
-                for (int i = r; i < r + 8; ++i) {
-                    a0 = A[i][c + 0];
-                    a1 = A[i][c + 1];
-                    a2 = A[i][c + 2];
-                    a3 = A[i][c + 3];
-                    a4 = A[i][c + 4];
-                    a5 = A[i][c + 5];
-                    a6 = A[i][c + 6];
-                    a7 = A[i][c + 7];
-
-                    if (c + 0 == i) diag = a0; else B[c + 0][i] = a0;
-                    if (c + 1 == i) diag = a1; else B[c + 1][i] = a1;
-                    if (c + 2 == i) diag = a2; else B[c + 2][i] = a2;
-                    if (c + 3 == i) diag = a3; else B[c + 3][i] = a3;
-                    if (c + 4 == i) diag = a4; else B[c + 4][i] = a4;
-                    if (c + 5 == i) diag = a5; else B[c + 5][i] = a5;
-                    if (c + 6 == i) diag = a6; else B[c + 6][i] = a6;
-                    if (c + 7 == i) diag = a7; else B[c + 7][i] = a7;
-                    if (r == c) B[i][i] = diag;
-                }
+            for (int i = r; i < r + 8; ++i) {
+                a0 = A[i][c + 0];
+                a1 = A[i][c + 1];
+                a2 = A[i][c + 2];
+                a3 = A[i][c + 3];
+                a4 = A[i][c + 4];
+                a5 = A[i][c + 5];
+                a6 = A[i][c + 6];
+                a7 = A[i][c + 7];
+                
+                B[c + 0][i] = a0;
+                B[c + 1][i] = a1;
+                B[c + 2][i] = a2;
+                B[c + 3][i] = a3;
+                B[c + 4][i] = a4;
+                B[c + 5][i] = a5;
+                B[c + 6][i] = a6;
+                B[c + 7][i] = a7;
+            }
         }
     }
 
@@ -70,67 +73,61 @@ void transpose_submit(int M, int N, int A[N][M], int B[M][N])
  * You can define additional transpose functions below. We've defined
  * a simple one below to help you get started. 
  */ 
-char otherdude_desc[] = "Whatever amn";
-void otherdude(int M, int N, int A[N][M], int B[M][N])
+void trans_64x64(int M, int N, int A[N][M], int B[M][N])
 {
-    int a_0, a_1, a_2, a_3, a_4, a_5, a_6, a_7;
-    for (int i = 0; i < 64; i += 8)
-    {
-        for (int j = 0; j < 64; j += 8)
-        {
-            for (int k = i; k < i + 4; k++)
-            {
-                a_0 = A[k][j + 0];
-                a_1 = A[k][j + 1];
-                a_2 = A[k][j + 2];
-                a_3 = A[k][j + 3];
-                a_4 = A[k][j + 4];
-                a_5 = A[k][j + 5];
-                a_6 = A[k][j + 6];
-                a_7 = A[k][j + 7];
+    int a0, a1, a2, a3, a4, a5, a6, a7;
+    for (int i = 0; i < 64; i += 8) {
+        for (int j = 0; j < 64; j += 8) {
+            for (int k = i; k < i + 4; ++k) {
+                a0 = A[k][j + 0];
+                a1 = A[k][j + 1];
+                a2 = A[k][j + 2];
+                a3 = A[k][j + 3];
+                a4 = A[k][j + 4];
+                a5 = A[k][j + 5];
+                a6 = A[k][j + 6];
+                a7 = A[k][j + 7];
 
-                B[j + 0][k] = a_0;
-                B[j + 1][k] = a_1;
-                B[j + 2][k] = a_2;
-                B[j + 3][k] = a_3;
-                B[j + 0][k + 4] = a_4;
-                B[j + 1][k + 4] = a_5;
-                B[j + 2][k + 4] = a_6;
-                B[j + 3][k + 4] = a_7;
+                B[j + 0][k] = a0;
+                B[j + 1][k] = a1;
+                B[j + 2][k] = a2;
+                B[j + 3][k] = a3;
+                B[j + 0][k + 4] = a4;
+                B[j + 1][k + 4] = a5;
+                B[j + 2][k + 4] = a6;
+                B[j + 3][k + 4] = a7;
             }
-            for (int k = j; k < j + 4; k++)
-            {
-                a_0 = B[k][i + 4];
-                a_1 = B[k][i + 5];
-                a_2 = B[k][i + 6];
-                a_3 = B[k][i + 7];
+            for (int k = j; k < j + 4; ++k) {
+                a0 = B[k][i + 4];
+                a1 = B[k][i + 5];
+                a2 = B[k][i + 6];
+                a3 = B[k][i + 7];
 
-                a_4 = A[i + 4][k];
-                a_5 = A[i + 5][k];
-                a_6 = A[i + 6][k];
-                a_7 = A[i + 7][k];
+                a4 = A[i + 4][k];
+                a5 = A[i + 5][k];
+                a6 = A[i + 6][k];
+                a7 = A[i + 7][k];
 
-                B[k][i + 4] = a_4;
-                B[k][i + 5] = a_5;
-                B[k][i + 6] = a_6;
-                B[k][i + 7] = a_7;
+                B[k][i + 4] = a4;
+                B[k][i + 5] = a5;
+                B[k][i + 6] = a6;
+                B[k][i + 7] = a7;
 
-                B[k + 4][i + 0] = a_0;
-                B[k + 4][i + 1] = a_1;
-                B[k + 4][i + 2] = a_2;
-                B[k + 4][i + 3] = a_3;
+                B[k + 4][i + 0] = a0;
+                B[k + 4][i + 1] = a1;
+                B[k + 4][i + 2] = a2;
+                B[k + 4][i + 3] = a3;
             }
-            for (int k = i + 4; k < i + 8; k++)
-            {
-                a_4 = A[k][j + 4];
-                a_5 = A[k][j + 5];
-                a_6 = A[k][j + 6];
-                a_7 = A[k][j + 7];
+            for (int k = i + 4; k < i + 8; ++k) {
+                a4 = A[k][j + 4];
+                a5 = A[k][j + 5];
+                a6 = A[k][j + 6];
+                a7 = A[k][j + 7];
 
-                B[j + 4][k] = a_4;
-                B[j + 5][k] = a_5;
-                B[j + 6][k] = a_6;
-                B[j + 7][k] = a_7;
+                B[j + 4][k] = a4;
+                B[j + 5][k] = a5;
+                B[j + 6][k] = a6;
+                B[j + 7][k] = a7;
             }
         }
     }
@@ -165,7 +162,7 @@ void registerFunctions()
     /* Register your solution function */ 
     registerTransFunction(transpose_submit, transpose_submit_desc);
     /* Register any additional transpose functions */
-    registerTransFunction(otherdude, otherdude_desc);
+    registerTransFunction(trans, trans_desc);
 
 }
 
