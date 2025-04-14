@@ -163,7 +163,7 @@ void trans(int M, int N, int A[N][M], int B[M][N])
 void registerFunctions()
 {
     /* Register your solution function */ 
-
+    registerTransFunction(transpose_submit, transpose_submit_desc);
     /* Register any additional transpose functions */
     registerTransFunction(otherdude, otherdude_desc);
 
