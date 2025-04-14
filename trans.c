@@ -11,6 +11,9 @@
 #include "cachelab.h"
 
 int is_transpose(int M, int N, int A[N][M], int B[M][N]);
+void trans_32x32(int M, int N, int A[N][M], int B[M][N]);
+void trans_64x64(int M, int N, int A[N][M], int B[M][N]);
+void trans_61x67(int M, int N, int A[N][M], int B[M][N]);
 
 /* 
  * transpose_submit - This is the solution transpose function that you
@@ -43,7 +46,8 @@ void transpose_submit(int M, int N, int A[N][M], int B[M][N])
  * a simple one below to help you get started. 
  */ 
 
-void trans_32x32(int M, int N, int A[N][M], int B[M][N]) {
+void trans_32x32(int M, int N, int A[N][M], int B[M][N]) 
+{
     int r, c;
     int a0, a1, a2, a3, a4, a5, a6, a7;
     for (r = 0; r < N; r += 8) { // r = start row of block in A
